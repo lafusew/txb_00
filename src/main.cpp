@@ -2,7 +2,7 @@
 #include "Components.h"
 
 int main() {
-  Position pos = { 0, 0 };
+  Position pos = { 10, 10 };
 
 
   terminal_open();
