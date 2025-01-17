@@ -9,7 +9,7 @@ int main() {
 
   // Printing text
   terminal_color("red");
-  terminal_print(pos.x,  pos.y, "Hello, world!");
+  terminal_print(pos.x,  pos.y, "Salut, world!");
   terminal_put(10, 10, 205);
   terminal_refresh();
 
