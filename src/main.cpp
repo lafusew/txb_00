@@ -8,7 +8,7 @@ int main() {
   terminal_open();
 
   // Printing text
-  terminal_color("green");
+  terminal_color("blue");
   terminal_print(pos.x,  pos.y, "Salut, world!");
   terminal_put(10, 10, 205);
   terminal_refresh();
