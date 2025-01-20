@@ -34,7 +34,8 @@ endif()
 include_directories(include)
 
 # Our Project
-add_executable(${CMAKE_PROJECT_NAME} src/main.cpp)
+add_executable(${CMAKE_PROJECT_NAME} src/main.cpp src/Game.cpp src/AStar.cpp
+                                     src/Terrain.cpp)
 
 # Linking required libraries
 target_link_libraries(${PROJECT_NAME} BearLibTerminal)

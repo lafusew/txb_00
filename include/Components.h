@@ -1,21 +1,16 @@
 #pragma once
-#include <string>
-#include <unordered_map>
 
+#include <utility>
+#include <vector>
 struct Position
 {
-	float x, y;
+	int x, y;
 };
 
-struct Inventory { 
-	std::unordered_map<std::string, int> resources; 
+struct PositionGoal
+{
+	int x, y;
 };
 
-struct ResourceYeld {
-	std::string type;
-	int amount;	
-};
+using Path = std::vector<std::pair<int, int>>;
 
-struct Boost {
-	int amount;
-};

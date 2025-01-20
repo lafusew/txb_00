@@ -1,76 +1,101 @@
 #include "AStar.h"
+#include "Terrain.h"
 
-// Function to find the shortest path using A* algorithm
-std::vector<std::pair<int, int>> AStar::findPath(const Grid &grid, std::pair<int, int> start, std::pair<int, int> goal) {
-  // Priority queue (Min-Heap) to store open nodes, sorted by lowest fCost
+#include <algorithm>
+#include <climits>
+#include <cmath>
+#include <queue>
+#include <unordered_map>
+#include <vector>
+
+std::vector<std::pair<int, int>> AStar::findPath(const Area &grid,
+                                                 std::pair<int, int> start,
+                                                 std::pair<int, int> goal) {
+  // Priority queue for efficient "get lowest cost node" operations
   std::priority_queue<Node, std::vector<Node>, std::greater<Node>> openList;
-  // Map to store all created nodes, avoiding duplicate allocations
+
+  // Track all nodes to manage memory and avoid duplicates
   std::unordered_map<int, std::unordered_map<int, Node *>> allNodes;
-  // Lambda function to get or create a node at a given (x, y) position
-  auto getNode = [&](int x, int y) -> Node * {
-    if (allNodes[x][y] == nullptr) { // If node does not exist, create it
-      allNodes[x][y] =
-          new Node(x, y, INT_MAX, heuristic(x, y, goal.first, goal.second));
+
+  // Helper to get/create nodes - avoids duplicate code and manages node
+  // creation
+  auto getNode = [&](int x, int y, Node *parent = nullptr,
+                     int gCost = INT_MAX) {
+    if (allNodes[x][y] == nullptr) {
+      allNodes[x][y] = new Node(
+          x, y, gCost, heuristic(x, y, goal.first, goal.second), parent);
     }
     return allNodes[x][y];
   };
-  // Initialize the start node
-  Node *startNode = getNode(start.first, start.second);
-  startNode->gCost = 0;                // Distance from start to itself is 0
-  startNode->fCost = startNode->hCost; // Initial fCost is just the heuristic
-  openList.push(*startNode);           // Add start node to open list
 
-  // Define possible movement directions (Up, Right, Down, Left, Diagonals)
-  std::vector<std::pair<int, int>> directions = {
-      {0, 1}, {1, 0}, {0, -1}, {-1, 0}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}};
+  // Initialize starting point
+  Node *startNode = getNode(start.first, start.second, nullptr, 0);
+  openList.push(*startNode);
 
-  // Main A* loop: Process nodes until the goal is found or no path exists
+  // All possible movement directions (including diagonals)
+  const std::vector<std::pair<int, int>> directions = {
+      {0, 1}, {1, 0},   {0, -1}, {-1, 0}, // Cardinal directions
+      {1, 1}, {-1, -1}, {1, -1}, {-1, 1}  // Diagonals
+  };
+
+  // Main pathfinding loop
   while (!openList.empty()) {
-    // Get the node with the lowest fCost from the open list
     Node current = openList.top();
     openList.pop();
-    // If the goal is reached, reconstruct the path
+
+    // Check if we reached the goal
     if (current.x == goal.first && current.y == goal.second) {
+      // Reconstruct and return the path
       std::vector<std::pair<int, int>> path;
       for (Node *n = &current; n != nullptr; n = n->parent) {
         path.emplace_back(n->x, n->y);
       }
-      std::reverse(path.begin(), path.end()); // Reverse to get correct order
-      return path;                            // Return the final path
+      // Clean up allocated nodes
+      for (auto &row : allNodes) {
+        for (auto &node : row.second) {
+          delete node.second;
+        }
+      }
+      std::reverse(path.begin(), path.end());
+      return path;
     }
-    // Explore neighboring nodes
+
+    // Check all neighboring tiles
     for (auto [dx, dy] : directions) {
-      int nx = current.x + dx;
-      int ny = current.y + dy;
-      // Skip if the new position is not walkable
-      if (!grid.isWalkable(nx, ny))
+      int newX = current.x + dx;
+      int newY = current.y + dy;
+
+      // Skip if not walkable
+      if (!isWalkable(grid, newX, newY))
         continue;
-      Node *neighbor = getNode(nx, ny);
-      // Assign movement cost: 1 for cardinal moves, 1.4 (~sqrt(2)) for
-      // diagonals
-      int moveCost = (dx == 0 || dy == 0)
-                         ? 1
-                         : 14; // Using scaled integer (10x for accuracy)
-      int tentativeG = current.gCost + moveCost;
-      // If the new path to neighbor is shorter, update it
-      if (tentativeG < neighbor->gCost) {
-        neighbor->gCost = tentativeG;
-        neighbor->fCost =
-            neighbor->gCost + neighbor->hCost; // Update total cost
-        neighbor->parent =
-            getNode(current.x, current.y); // Set parent for path reconstruction
-        openList.push(*neighbor); // Add to open list for further exploration
+
+      // Calculate new path cost (10 for cardinal, 14 for diagonal ≈ √2 * 10)
+      int moveCost = (dx == 0 || dy == 0) ? 10 : 14;
+      int newGCost = current.gCost + moveCost;
+
+      Node *neighbor = getNode(newX, newY);
+
+      // Update node if we found a better path
+      if (newGCost < neighbor->gCost) {
+        neighbor->parent = getNode(current.x, current.y);
+        neighbor->gCost = newGCost;
+        neighbor->fCost = newGCost + neighbor->hCost;
+        openList.push(*neighbor);
       }
     }
   }
 
-  return {}; // Return empty path if no solution is found
+  // Clean up if no path found
+  for (auto &row : allNodes) {
+    for (auto &node : row.second) {
+      delete node.second;
+    }
+  }
+  return {};
 }
 
-// Heuristic function: Uses Diagonal distance (best for 8-directional movement)
 int AStar::heuristic(int x1, int y1, int x2, int y2) {
   int dx = std::abs(x1 - x2);
   int dy = std::abs(y1 - y2);
-  return 10 * (dx + dy) +
-         (4 * std::min(dx, dy)); // Manhattan + diagonal adjustment
+  return 10 * (dx + dy) + (4 * std::min(dx, dy));
 }
