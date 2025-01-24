@@ -1,5 +1,5 @@
-#include "AStar.h"
-#include "Terrain.h"
+#include "utils/AStar.h"
+#include "world/Area.h"
 
 #include <algorithm>
 #include <climits>

@@ -1,5 +1,6 @@
 #pragma once
-#include "Terrain.h"
+
+#include "world/Area.h"
 #include <vector>
 #include <cmath>
 

@@ -1,8 +1,8 @@
-#pragma once
-#include <array>
-#include <memory>
-#include <string>
+#pragma once 
+
 #include <unordered_map>
+#include <string>
+#include <array>
 
 namespace flecs { struct world; }
 
@@ -51,15 +51,4 @@ public:
             }
         };
     }
-};
-
-class AreaManager {
-private:
-	std::unordered_map<std::string, std::unique_ptr<Area>> areas;
-	flecs::world& ecs_world;
-public:
-	AreaManager(flecs::world& world);
-	Area* create_area(const std::string& name);
-	Area* get_area(const std::string& name);
-	void register_area_systems();
 };

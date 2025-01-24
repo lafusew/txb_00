@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.29)
-project(farm_game)
+project(txb__00)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -34,8 +34,15 @@ endif()
 include_directories(include)
 
 # Our Project
-add_executable(${CMAKE_PROJECT_NAME} src/main.cpp src/Game.cpp src/AStar.cpp
-                                     src/Terrain.cpp)
+add_executable(
+  ${CMAKE_PROJECT_NAME}
+  src/main.cpp
+  src/core/Game.cpp
+  src/utils/AStar.cpp
+  src/world/Area.cpp
+  src/world/AreaManager.cpp
+  src/systems/Movements.cpp
+  src/systems/Rendering.cpp)
 
 # Linking required libraries
 target_link_libraries(${PROJECT_NAME} BearLibTerminal)

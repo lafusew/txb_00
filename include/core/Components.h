@@ -1,7 +1,13 @@
 #pragma once
 
-#include <utility>
+#include "BearLibTerminal.h"
 #include <vector>
+
+struct Image {
+	int character;
+	color_t color;
+};
+
 struct Position
 {
 	int x, y;
