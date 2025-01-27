@@ -20,3 +20,10 @@ struct PositionGoal
 
 using Path = std::vector<std::pair<int, int>>;
 
+struct Health
+{
+	int value;
+	int max_value;
+};
+
+
