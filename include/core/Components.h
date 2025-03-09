@@ -1,11 +1,11 @@
 #pragma once
 
-#include "BearLibTerminal.h"
 #include <vector>
+#include "raylib.h"
 
-struct Image {
+struct ScreenImage {
 	int character;
-	color_t color;
+	Color color;
 };
 
 struct Position

@@ -42,7 +42,7 @@ public:
 
   void initialize(flecs::world& world) override {
     movement_system_ = world.system<Path, Position, PositionGoal>("MoveAlongPath")
-    .each([](flecs::entity e, Path& path, Position& pos, PositionGoal& g) {
+    .each([this](flecs::entity e, Path& path, Position& pos, PositionGoal& g) {
         if (path.empty()) {
             e.remove<Path>();
             if (pos.x == g.x && pos.y == g.y) {
@@ -50,6 +50,19 @@ public:
             }
             return;
         }
+
+        int goal_x = path.front().first;
+        int goal_y = path.front().second;
+        
+        // Check if the goal is reachable
+        // Note: This is a simple check, in a real game you would need to
+        // implement more advanced pathfinding
+        if (area_.is_blocked(goal_x, goal_y)) {
+            // Path is blocked, clear it
+            e.remove<Path>();
+            return;
+        }
+
         // Update position to the next waypoint
         pos.x = path.front().first;
         pos.y = path.front().second;

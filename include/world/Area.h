@@ -13,8 +13,8 @@ struct Tile {
 
 class Area {
 private:
-	static constexpr int WIDTH = 128;
-	static constexpr int HEIGHT = 56;
+	static constexpr int WIDTH = 64;
+	static constexpr int HEIGHT = 64;
 	std::array<std::array<Tile, WIDTH>, HEIGHT> tiles;
 	std::string name;
 	
@@ -33,6 +33,7 @@ private:
 
 public:
 	explicit Area(std::string name);
+
 	// TilePropertyStorage<float> temperatures;
 	Tile* get_tile(int x, int y);
 	const Tile* get_tile(int x, int y) const;
@@ -42,6 +43,8 @@ public:
 	static constexpr int get_width();
 	static constexpr int get_height();
 	const std::string& get_name();
+
+	bool is_blocked(int x, int y) const;
 
 	template<typename Func>
 	void for_each_tile(Func&& func) {

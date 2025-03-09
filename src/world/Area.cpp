@@ -31,6 +31,14 @@ constexpr int Area::get_width() { return WIDTH; }
 
 const std::string& Area::get_name() { return name; }
 
+bool Area::is_blocked(int x, int y) const {
+  if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) {
+    return true;
+  }
+
+  return !tiles[y][x].walkable;
+}
+
 void Area::generate_terrain(const std::string& pattern = "maze") {
   if (pattern == "maze") {
     // More complex maze-like pattern

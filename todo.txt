@@ -1,0 +1,8 @@
+- Render isometric view of the world
+- Support animated tiles
+- Support multiple layers
+- World coord to screen coord and vice versa
+ - Selecting a tile
+- Pathfinding
+- Rendering entities on tile 
+- Lerp movement of entities. 
